@@ -1,0 +1,25 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+    - task: install
+
+  install:
+    sources:
+      - package.json
+    generates:
+      - bun.lock
+    cmds:
+      - bun install --frozen-lockfile
+
+  build:
+    desc: Build GitHub Action
+    deps:
+      - install
+    sources:
+      - src/**/*.ts
+    generates:
+      - dist/index.js
+    cmds:
+      - bun run build.ts

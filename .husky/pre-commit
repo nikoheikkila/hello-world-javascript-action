@@ -1,2 +1,2 @@
-bun build:action
+task build
 git add dist
