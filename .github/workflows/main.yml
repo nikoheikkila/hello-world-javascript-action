@@ -1,4 +1,4 @@
-name: Test Action
+name: Acceptance Tests
 
 on:
   pull_request:
@@ -9,15 +9,43 @@ on:
       - main
 
 jobs:
-  hello_world_job:
-    name: A job to say hello
+  test-unit:
+    name: Unit Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Hello world action step
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.22
+
+      - name: Install Task
+        uses: go-task/setup-task@v1
+        with:
+          repo-token: ${{ github.token }}
+          version: '3.x'
+
+      - name: Install dependencies
+        run: task install
+
+      - name: Run unit tests
+        run: task test
+
+      - name: Build application
+        run: task build
+
+  test-action:
+    name: Action Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Greet user
         uses: ./
         id: hello
         with:
