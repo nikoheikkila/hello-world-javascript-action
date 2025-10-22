@@ -3,6 +3,7 @@ import {FakeCore, FakeGitHub} from "./utils.ts";
 import {HelloWorldGitHubAction} from "../src/action.ts";
 
 describe('Hello World GitHub Action', () => {
+  const dateFn = () => new Date();
   let action: HelloWorldGitHubAction;
   let core: FakeCore;
   let github: FakeGitHub;
@@ -10,7 +11,11 @@ describe('Hello World GitHub Action', () => {
   beforeEach(() => {
     core = new FakeCore();
     github = new FakeGitHub();
-    action = new HelloWorldGitHubAction(core, github);
+    action = new HelloWorldGitHubAction({
+      core,
+      github,
+      dateFn,
+    });
   });
 
   it('greets the caller', () => {
@@ -23,12 +28,9 @@ describe('Hello World GitHub Action', () => {
   });
 
   it('sets current time as output', () => {
-    const date = Date.now();
-    spyOn(Date, 'now').mockReturnValue(date);
-
     action.run();
 
-    expect(core.getOutput('time')).toBe(new Date(date).toTimeString());
+    expect(core.getOutput('time')).toBe(dateFn().toTimeString());
   });
 
   it('prints out context payload for debugging', () => {

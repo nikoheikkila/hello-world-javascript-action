@@ -11,3 +11,11 @@ export interface Context {
 export interface GitHub {
   context: Context;
 }
+
+export type DateFn = () => Date;
+
+export interface ActionDependencies {
+  core: Core;
+  github: GitHub;
+  dateFn?: DateFn;
+}
