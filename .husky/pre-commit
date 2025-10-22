@@ -1,2 +1,2 @@
-task -p test build
+task -p test build lint
 git add dist

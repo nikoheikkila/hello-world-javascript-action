@@ -36,3 +36,13 @@ tasks:
       task: test
       vars:
         CLI_ARGS: --watch
+
+  lint:
+    desc: Lint code with Biome
+    cmds:
+      - bunx @biomejs/biome check .
+
+  format:
+    desc: Format code with Biome
+    cmds:
+      - bunx @biomejs/biome check --write .
