@@ -3,7 +3,7 @@ import * as github from "@actions/github";
 import { HelloWorldGitHubAction } from "./action.ts";
 
 export default function main() {
-	const action = new HelloWorldGitHubAction(core, github);
+	const action = new HelloWorldGitHubAction({ core, github });
 
 	try {
 		action.run();
