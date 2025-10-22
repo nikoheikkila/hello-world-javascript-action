@@ -6,6 +6,7 @@ tasks:
     - task: install
 
   install:
+    desc: Install dependencies
     sources:
       - package.json
     generates:
@@ -23,3 +24,15 @@ tasks:
       - dist/index.js
     cmds:
       - bun run build.ts
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - bun test {{ .CLI_ARGS }}
+
+  test:watch:
+    desc: Run tests in watch mode
+    cmd:
+      task: test
+      vars:
+        CLI_ARGS: --watch
