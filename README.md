@@ -1,15 +1,23 @@
-# hello-world-javascript-action
+# Hello world JavaScript action
 
-To install dependencies:
+This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
 
-```bash
-bun install
+## Inputs
+
+### `who-to-greet`
+
+**Required** The name of the person to greet. Default `"World"`.
+
+## Outputs
+
+### `time`
+
+The time we greeted you.
+
+## Example usage
+
+```yaml
+uses: actions/hello-world-javascript-action@e76147da8e5c81eaf017dede5645551d4b94427b
+with:
+  who-to-greet: Mona the Octocat
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.22. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
