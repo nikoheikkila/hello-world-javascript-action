@@ -5,8 +5,15 @@ tasks:
     cmds:
     - task: install
 
+  pull:
+    desc: Pull latest changes from VCS
+    cmds:
+      - git pull --rebase --force
+
   install:
     desc: Install dependencies
+    deps:
+      - pull
     sources:
       - package.json
     generates:
