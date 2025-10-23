@@ -28,21 +28,21 @@ describe("Hello World GitHub Action", () => {
 	});
 
 	it("sets current time as output", () => {
+		const expectedTime = dateFn().toTimeString();
+
 		action.run();
 
-		expect(core.getOutput("time")).toBe(dateFn().toTimeString());
+		const actualTime = core.getOutput("time");
+		expect(actualTime).toBe(expectedTime);
 	});
 
 	it("prints out context payload for debugging", () => {
-		const payload = { key: "value" };
-		const stringify = (data: Record<string, unknown>) =>
-			JSON.stringify(data, undefined, 2);
-		github.context.payload = payload;
+		github.setContext("payload", { key: "value" });
 
 		action.run();
 
-		expect(core.events.info).toContain(
-			`The event payload: ${stringify(payload)}`,
+		expect(core.events.debug).toContain(
+			'The event payload: {\n  "key": "value"\n}',
 		);
 	});
 });

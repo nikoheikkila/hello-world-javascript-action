@@ -1,6 +1,6 @@
 import type { Context, Core, GitHub } from "../src/types.ts";
 
-export type LogLevel = "info";
+export type LogLevel = "debug" | "info";
 type Events = Record<LogLevel, string[]>;
 
 export class FakeCore implements Core {
@@ -9,7 +9,7 @@ export class FakeCore implements Core {
 	public readonly outputs: Map<string, unknown>;
 
 	public constructor() {
-		this.events = { info: [] };
+		this.events = { info: [], debug: [] };
 		this.inputs = new Map();
 		this.outputs = new Map();
 	}
@@ -30,6 +30,10 @@ export class FakeCore implements Core {
 		this.outputs.set(name, value);
 	}
 
+	public debug(message: string): void {
+		this.events.debug.push(message);
+	}
+
 	public info(message: string): void {
 		this.events.info.push(message);
 	}
@@ -38,9 +42,13 @@ export class FakeCore implements Core {
 export class FakeGitHub implements GitHub {
 	public context: Context;
 
-	constructor() {
+	public constructor() {
 		this.context = {
 			payload: {},
 		};
+	}
+
+	public setContext(key: string, value: unknown): void {
+		this.context[key] = value;
 	}
 }

@@ -26,7 +26,7 @@ export class HelloWorldGitHubAction {
 	}
 
 	private dumpPayload(): void {
-		this.core.info(`The event payload: ${this.payload}`);
+		this.core.debug(`The event payload: ${this.payload}`);
 	}
 
 	private get payload(): string {
