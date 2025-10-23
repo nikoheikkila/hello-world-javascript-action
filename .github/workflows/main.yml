@@ -76,8 +76,10 @@ jobs:
           default_bump: patch
           create_annotated_tag: true
           dry_run: true
+          tag_prefix: ""
 
       - name: Create and push version tags
+        if: steps.tag_version.outputs.new_tag != steps.tag_version.outputs.previous_tag
         run: |
           VERSION="${{ steps.tag_version.outputs.new_version }}"
           MAJOR=$(echo $VERSION | cut -d. -f1)
@@ -95,6 +97,7 @@ jobs:
           git push origin "v$MINOR" --force
 
       - name: Create GitHub release
+        if: steps.tag_version.outputs.new_tag != steps.tag_version.outputs.previous_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
