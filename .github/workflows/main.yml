@@ -56,3 +56,51 @@ jobs:
 
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
+
+  release:
+    name: Release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test-unit, test-action]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Determine next version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          create_annotated_tag: true
+          dry_run: true
+
+      - name: Create and push version tags
+        run: |
+          VERSION="${{ steps.tag_version.outputs.new_version }}"
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f1-2)
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git tag -fa "v$MAJOR" -m "Release v$MAJOR"
+          git tag -fa "v$MINOR" -m "Release v$MINOR"
+          
+          git push origin "$VERSION"
+          git push origin "v$MAJOR" --force
+          git push origin "v$MINOR" --force
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.tag_version.outputs.new_version }}" \
+            --title "Release ${{ steps.tag_version.outputs.new_version }}" \
+            --generate-notes
