@@ -45,11 +45,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
       - name: Greet user
-        uses: ./
+        uses: nikoheikkila/hello-world-javascript-action@v1
         id: hello
         with:
           who-to-greet: Niko
