@@ -23,14 +23,22 @@ tasks:
 
   build:
     desc: Build GitHub Action
-    deps:
-      - install
     sources:
       - src/**/*.ts
     generates:
       - dist/index.js
     cmds:
-      - bun run build.ts
+      - >
+        bun build src/index.ts
+        --production
+        --target node
+        --outdir dist
+        --format esm
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf dist/
 
   test:
     desc: Run unit tests

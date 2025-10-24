@@ -25,7 +25,6 @@ The action follows a clean architecture pattern with clear separation of concern
 - **`src/main.ts`**: Entry point that handles error boundaries
 - **`src/index.ts`**: Simple runner that invokes `main()`
 - **`tests/`**: Test doubles (`FakeCore`, `FakeGitHub`) and unit tests
-- **`build.ts`**: Bun build configuration for bundling
 
 This design uses **dependency injection** to make the action fully testable without mocking the GitHub Actions toolkit.
 
@@ -63,7 +62,6 @@ task build
 
 This bundles `src/index.ts` into `dist/index.js` with:
 - Minification enabled
-- Inline source maps
 - ESM format targeting Node.js 20
 
 ### Pre-commit Hooks
@@ -154,7 +152,6 @@ runs:
 │   ├── main.test.ts      # Unit tests
 │   └── utils.ts          # Test doubles (FakeCore, FakeGitHub)
 ├── action.yml            # GitHub Action metadata
-├── build.ts              # Bun build configuration
 ├── package.json          # Dependencies
 ├── Taskfile.yml          # Task automation configuration
 ├── tsconfig.json         # TypeScript configuration
