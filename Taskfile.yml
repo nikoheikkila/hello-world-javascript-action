@@ -52,6 +52,11 @@ tasks:
       vars:
         CLI_ARGS: --watch
 
+  test:mutation:
+    desc: Run mutation tests with StrykerJS
+    cmds:
+      - bunx stryker run
+
   lint:
     desc: Lint code with Biome
     cmds:

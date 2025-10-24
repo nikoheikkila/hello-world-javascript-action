@@ -37,6 +37,9 @@ jobs:
       - name: Run unit tests
         run: task test
 
+      - name: Run mutation tests
+        run: task test:mutation
+
       - name: Build application
         run: task build
 
