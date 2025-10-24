@@ -40,16 +40,19 @@ jobs:
       - name: Build application
         run: task build
 
-  test-action:
-    name: Action Test
+  test-local-action:
+    name: Test local action
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Greet user
-        uses: nikoheikkila/hello-world-javascript-action@v1
+        uses: ./
         id: hello
         with:
-          who-to-greet: Niko
+          who-to-greet: ${{ github.actor }}
 
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
@@ -57,7 +60,7 @@ jobs:
   release:
     name: Release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-unit, test-action]
+    needs: [test-unit, test-local-action]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -104,3 +107,18 @@ jobs:
           gh release create "${{ steps.tag_version.outputs.new_version }}" \
             --title "Release ${{ steps.tag_version.outputs.new_version }}" \
             --generate-notes
+
+  test-action:
+    name: Test tagged action
+    runs-on: ubuntu-latest
+    needs: [release]
+
+    steps:
+      - name: Greet user
+        uses: nikoheikkila/hello-world-javascript-action@v1
+        id: hello
+        with:
+          who-to-greet: ${{ github.actor }}
+
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
