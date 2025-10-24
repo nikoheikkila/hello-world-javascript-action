@@ -43,7 +43,7 @@ tasks:
   test:
     desc: Run unit tests
     cmds:
-      - bun test {{ .CLI_ARGS }}
+      - bun test --coverage {{ .CLI_ARGS }}
 
   test:watch:
     desc: Run tests in watch mode
