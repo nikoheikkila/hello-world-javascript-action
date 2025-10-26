@@ -11,26 +11,16 @@ This project is a custom GitHub Action. The development workflow differs from ty
 Use Task for all common operations:
 
 ```sh
-task install      # Install dependencies with bun install --frozen-lockfile
-task build        # Bundle action with Bun to dist/index.js
-task test         # Run tests with bun test
-task test:watch   # Run tests in watch mode
+task install        # Install dependencies with bun install --frozen-lockfile
+task build          # Bundle action with Bun to dist/index.js
+task test           # Run tests with bun test
+task test:mutation  # Run mutation tests with Stryker
+task test:watch     # Run tests in watch mode
 ```
 
 ### Build Process
 
-The `task build` command uses `Bun.build()` to create a single JavaScript bundle:
-
-```ts
-Bun.build({
-  entrypoints: ['src/index.ts'],
-  outdir: 'dist',
-  target: 'node',
-  format: 'esm',
-  sourcemap: 'inline',
-  minify: true,
-});
-```
+The `task build` command uses Bun to create a single JavaScript bundle:
 
 **Key points:**
 - Entry point: `src/index.ts`
@@ -41,62 +31,16 @@ Bun.build({
 
 ### Testing with Test Doubles
 
-Tests must use dependency injection with test doubles instead of mocking:
+Tests must use dependency injection with test doubles instead of mocking.
 
-```ts
-import { test, expect } from 'bun:test';
-import { FakeCore, FakeGitHub } from './tests/utils.ts';
-import { HelloWorldGitHubAction } from './src/action.ts';
-
-test('action behavior', () => {
-  const core = new FakeCore();
-  const github = new FakeGitHub();
-  const action = new HelloWorldGitHubAction(core, github);
-  
-  core.setInput('who-to-greet', 'World');
-  action.run();
-  
-  expect(core.events.info).toContain('Hello to you, World!');
-});
-```
-
-**Test doubles** (`FakeCore`, `FakeGitHub`) in `tests/utils.ts`:
+**Test doubles** in `tests/utils.ts`:
 - Implement same interfaces as `@actions/core` and `@actions/github` so that `core` and `github` remain injectable
 - Track all method calls and outputs for assertions
 - Enable testing without GitHub Actions runtime
 
 ### Dependency Injection Pattern
 
-The action uses interfaces to decouple from GitHub Actions toolkit:
-
-```ts
-// src/types.ts - Define contracts
-interface Core {
-  getInput(name: string): string;
-  info(message: string): void;
-  setOutput(name: string, value: unknown): void;
-}
-
-interface GitHub {
-  context: Context;
-}
-
-// src/action.ts - Depend on interfaces, never on implementations
-class HelloWorldGitHubAction {
-  public constructor(private core: Core, private github: GitHub) {}
-  
-  public run(): void {
-    const name = this.core.getInput('who-to-greet');
-    this.core.info(`Hello to you, ${name}!`);
-    // ...
-  }
-}
-
-// src/main.ts - Wire up real dependencies for production
-import * as core from '@actions/core';
-import * as github from '@actions/github';
-const action = new HelloWorldGitHubAction(core, github);
-```
+The action uses interfaces to decouple from GitHub Actions toolkit.
 
 This enables:
 - Testing without GitHub Actions environment
@@ -108,7 +52,7 @@ This enables:
 Husky automatically runs before each commit:
 
 ```sh
-task -p test build  # Run tests and build in parallel
+task -p lint build  # Run tests and build in parallel
 git add dist        # Stage the updated bundle
 ```
 
@@ -117,28 +61,20 @@ git add dist        # Stage the updated bundle
 - The `dist/index.js` bundle must always be committed if it contains changes
 - Pre-commit hook prevents committing broken or outdated bundles
 
+### Pre-push Workflow
+
+Husky automatically runs before each push:
+
+```sh
+task test test:mutation  # Run unit and mutation tests in parallel
+```
+
+**Why this matters:**
+- Pre-push hook prevents pushing broken code
+
 ### Action Configuration (action.yml)
 
 The `action.yml` file defines the action's interface:
-
-```yaml
-name: Hello World
-description: Greet someone and record the time
-
-inputs:
-  who-to-greet:
-    description: Who to greet
-    required: true
-    default: World
-
-outputs:
-  time:
-    description: The time we greeted you
-
-runs:
-  using: node20       # GitHub Actions Node.js 20 runtime
-  main: dist/index.js # Entry point (bundled output)
-```
 
 **Important constraints:**
 - `runs.using`: Must be `node20`
@@ -170,15 +106,16 @@ The typical development cycle follows the TDD cycle:
 Test the action logic without GitHub:
 
 ```sh
-task test              # Run all tests
-task test --watch      # Watch mode for TDD
+task test                 # Run all unit tests
+task test --watch         # Watch mode for TDD
 task test -- main.test.ts # Run a specific test file
+task test:mutation        # Run mutation tests
 ```
 
 Test the bundled action (simulating GitHub Actions):
 
 ```sh
-bun dist/index.js
+node dist/index.js
 ```
 
 ### Debugging
@@ -188,4 +125,5 @@ If the action fails in CI:
 1. Check that `dist/index.js` is up to date with `src/`
 2. Run `task build` and commit if needed
 3. Verify the bundle works locally: `bun dist/index.js`
-4. Check GitHub Actions logs for runtime errors
+4. Find the ID of the latest failing run with `gh run list`
+5. Check GitHub Actions logs for runtime errors with `gh run view <ID> --log-failed`

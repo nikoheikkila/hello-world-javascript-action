@@ -1,15 +1,30 @@
 # ROT-13 JavaScript Action
 
-A custom GitHub Action built with **Bun** and **TypeScript** that greets a specified person and records the greeting time. This project demonstrates best practices for building GitHub Actions with modern JavaScript tooling, clean architecture, and comprehensive testing.
+A custom GitHub Action built with **Bun** and **TypeScript** that transforms strings using the ROT-13 cipher.
+
+This project demonstrates best practices for building GitHub Actions with modern JavaScript tooling, clean architecture, property-based testing, and comprehensive mutation testing.
 
 ## Features
 
 - 🚀 **Bun-powered toolchain**: Fast builds and testing with Bun runtime
 - 📐 **Clean architecture**: Dependency injection pattern for testability
-- ✅ **Comprehensive test coverage**: Unit tests with test doubles
+- ✅ **Comprehensive test coverage**: Unit tests with test doubles (no mocks)
+- 🧪 **Property-based testing**: Using [fast-check](https://fast-check.dev) to verify ROT-13 properties
+- 🦠 **Mutation testing**: [Stryker Mutator](https://stryker-mutator.io) ensures test quality and effectiveness
 - 🛠️ **Task automation**: Managed with [Task](https://taskfile.dev)
 - 🪝 **Pre-commit hooks**: Automatic testing and building via Husky
 - 📦 **Single bundle distribution**: Optimized for GitHub Actions runtime
+
+## What is ROT-13?
+
+In case you didn't know, ROT-13 is a simple letter substitution cipher that rotates letters 13 positions in the alphabet:
+
+- **A** → **N**, **B** → **O**, **M** → **Z**, **N** → **A**, **Z** → **M**
+- **Lowercase letters** are transformed similarly: **a** → **n**, **z** → **m**
+- **Non-alphabetic characters** (numbers, punctuation, spaces) remain unchanged
+- **Idempotent**: Applying ROT-13 twice returns the original text
+
+Example: `"Hello, World!"` → `"Uryyb, Jbeyq!"`
 
 ## Prerequisites
 
@@ -21,10 +36,11 @@ A custom GitHub Action built with **Bun** and **TypeScript** that greets a speci
 The action follows a clean architecture pattern with clear separation of concerns:
 
 - **`src/types.ts`**: Type definitions for `Core` and `GitHub` interfaces
-- **`src/action.ts`**: Main action logic in `HelloWorldGitHubAction` class
+- **`src/action.ts`**: Main action logic in `Rot13GitHubAction` class
+- **`src/rot13/`**: ROT-13 cipher implementation
 - **`src/main.ts`**: Entry point that handles error boundaries
 - **`src/index.ts`**: Simple runner that invokes `main()`
-- **`tests/`**: Test doubles (`FakeCore`, `FakeGitHub`) and unit tests
+- **`tests/`**: Test doubles (`FakeCore`, `FakeGitHub`) and comprehensive test suites
 
 This design uses **dependency injection** to make the action fully testable without mocking the GitHub Actions toolkit.
 
@@ -72,23 +88,22 @@ Husky automatically runs tests and builds before each commit. This ensures `dist
 
 ### Inputs
 
-#### `who-to-greet`
+#### `string`
 
-**Required**: The name of the person to greet.  
-**Default**: `"World"`
+**Required**: The text to transform with ROT-13 cipher.
 
 ### Outputs
 
-#### `time`
+#### `result`
 
-The timestamp when the greeting was executed (format: `HH:MM:SS GMT+XXXX (Timezone Name)`).
+The ROT-13 transformed string.
 
 ### Example Workflow
 
 Add this action to your GitHub workflow:
 
 ```yaml
-name: Greet
+name: Transform Text
 
 on:
   push:
@@ -96,63 +111,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  greet:
+  transform:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Greet someone
-        id: greeter
-        uses: nikoheikkila/hello-world-javascript-action@main
+      - name: Transform text with ROT-13
+        id: rot13
+        uses: nikoheikkila/rot-13-action@main
         with:
-          who-to-greet: 'Mona the Octocat'
+          string: 'Hello, World!'
 
-      - name: Show greeting time
-        run: echo "Greeted at ${{ steps.greeter.outputs.time }}"
+      - name: Show transformed result
+        run: |
+          echo "Transformed: ${{ steps.rot13.outputs.result }}"
 ```
 
 ### Action Metadata
 
-The action is configured in `action.yml`:
-
-```yaml
-name: Hello World
-description: Greet someone and record the time
-
-inputs:
-  who-to-greet:
-    description: Who to greet
-    required: true
-    default: World
-
-outputs:
-  time:
-    description: The time we greeted you
-
-runs:
-  using: node20
-  main: dist/index.js
-```
+The action is configured in [action.yml](./action.yml):
 
 ## Project Structure
 
 ```
 .
 ├── .husky/               # Git hooks managed by Husky
-│   └── pre-commit        # Runs tests and build before commit
+│   ├── pre-commit        # Runs tests and build before commit
+│   └── pre-push          # Runs mutation tests before push
 ├── dist/                 # Bundled action output
 │   └── index.js          # Single-file bundle for GitHub Actions
 ├── src/                  # Source code
 │   ├── action.ts         # Action implementation
+│   ├── rot13/            # ROT-13 cipher implementation
+│   │   └── index.ts      # Letter transformation logic
 │   ├── index.ts          # Entry point
 │   ├── main.ts           # Main runner with error handling
 │   └── types.ts          # TypeScript interfaces
 ├── tests/                # Test suite
-│   ├── main.test.ts      # Unit tests
+│   ├── main.test.ts      # Unit tests for action
+│   ├── rot13.test.ts     # Property-based tests for ROT-13
 │   └── utils.ts          # Test doubles (FakeCore, FakeGitHub)
 ├── action.yml            # GitHub Action metadata
 ├── package.json          # Dependencies
+├── stryker.config.mjs    # Mutation testing configuration
 ├── Taskfile.yml          # Task automation configuration
 ├── tsconfig.json         # TypeScript configuration
 └── README.md             # This file
@@ -169,11 +171,40 @@ The bundled JavaScript file is committed to version control because GitHub Actio
 
 ## Testing Strategy
 
+This project employs multiple testing approaches to ensure code quality:
+
+### Unit Testing
+
 Tests use **Bun's built-in test runner** and follow these patterns:
 
-- **Test doubles** (`FakeCore`, `FakeGitHub`) implement the same interfaces as `@actions/core` and `@actions/github`
+- **Test doubles** (`FakeCore`) implement the same interfaces as `@actions/core` package.
 - **Dependency injection** allows testing without real GitHub Actions context
 - **Event tracking** in `FakeCore` captures all logged messages and outputs for verification
+
+### Property-Based Testing
+
+The ROT-13 implementation is verified using `fast-check` to test mathematical properties:
+
+- **Idempotency**: The text transformed _twice_ equals the input
+- **Length preservation**: Output length equals input length
+- **Case preservation**: Uppercase letters remain uppercase, lowercase remain lowercase
+- **Non-alphabetic preservation**: Numbers, punctuation, and special characters are unchanged
+
+These properties are tested against thousands of randomly generated inputs to ensure correctness.
+
+### Mutation Testing
+
+**Stryker Mutator** performs mutation testing to verify test effectiveness:
+
+- Introduces small changes (mutants) to the source code
+- Ensures tests catch these mutants (kills them)
+- High mutation score indicates strong test coverage and quality
+
+Run mutation tests with:
+
+```sh
+task test:mutation
+```
 
 ## Contributing
 
