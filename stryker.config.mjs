@@ -1,13 +1,12 @@
-// @ts-check
-/** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {
 	packageManager: "npm",
 	testRunner: "command",
 	commandRunner: {
-		command: "bun test tests/rot13.test.ts",
+		command: "bun test",
 	},
-	mutate: ["src/rot13/index.ts"],
-	reporters: ["html", "clear-text", "progress"],
+	checkers: ["typescript"],
+	mutate: ["src/**/*.ts", "!src/main.ts"],
+	reporters: ["clear-text", "progress"],
 	htmlReporter: {
 		fileName: "reports/mutation/index.html",
 	},

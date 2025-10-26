@@ -1,9 +1,8 @@
 import * as core from "@actions/core";
-import * as github from "@actions/github";
-import { HelloWorldGitHubAction } from "./action.ts";
+import { Rot13GitHubAction } from "./action.ts";
 
 export default function main() {
-	const action = new HelloWorldGitHubAction({ core, github });
+	const action = new Rot13GitHubAction({ core });
 
 	try {
 		action.run();

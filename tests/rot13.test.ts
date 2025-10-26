@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, it } from "bun:test";
 import fc from "fast-check";
 import { transform } from "../src/rot13";
 
@@ -7,26 +7,6 @@ const isLowerCase = (letter: string) => letter === letter.toLowerCase();
 const isSpecialCharacter = (letter: string) => !/[A-Za-z]/.test(letter);
 
 describe("Rot 13", () => {
-	it.each([
-		["", ""],
-		["A", "N"],
-		["M", "Z"],
-		["N", "A"],
-		["Z", "M"],
-		["a", "n"],
-		["m", "z"],
-		["n", "a"],
-		["z", "m"],
-		["HELLO", "URYYB"],
-		["WORLD", "JBEYQ"],
-		["ROT13", "EBG13"],
-		["123", "123"],
-		["!@#$%", "!@#$%"],
-		["Hello, World!", "Uryyb, Jbeyq!"],
-	])("transforms %s to %s", (input, expected) => {
-		expect(transform(input)).toBe(expected);
-	});
-
 	it("does not change text length", () => {
 		fc.assert(
 			fc.property(fc.string(), (text) => {

@@ -1,4 +1,4 @@
-# Hello World JavaScript Action
+# ROT-13 JavaScript Action
 
 A custom GitHub Action built with **Bun** and **TypeScript** that greets a specified person and records the greeting time. This project demonstrates best practices for building GitHub Actions with modern JavaScript tooling, clean architecture, and comprehensive testing.
 

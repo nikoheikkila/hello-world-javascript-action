@@ -1,15 +1,14 @@
-name: Hello World
-description: Greet someone and record the time
+name: ROT-13
+description: Transform strings using ROT-13 cipher
 
 inputs:
-  who-to-greet:
-    description: Who to greet
+  string:
+    description: String to transform
     required: true
-    default: World
 
 outputs:
-  time:
-    description: The time we greeted you
+  result:
+    description: Result of the transformation
 
 runs:
   using: node20

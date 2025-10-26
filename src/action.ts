@@ -1,39 +1,18 @@
-import type { ActionDependencies, Core, DateFn, GitHub } from "./types.ts";
+import * as rot13 from "./rot13";
+import type { ActionDependencies, Core } from "./types.ts";
 
-export class HelloWorldGitHubAction {
+export class Rot13GitHubAction {
 	private readonly core: Core;
-	private readonly github: GitHub;
-	private readonly getDate: DateFn;
 
-	public constructor({ core, github, dateFn }: ActionDependencies) {
+	public constructor({ core }: ActionDependencies) {
 		this.core = core;
-		this.github = github;
-		this.getDate = dateFn ?? (() => new Date());
 	}
 
 	public run(): void {
-		this.greet();
-		this.tellTime();
-		this.dumpPayload();
-	}
+		const input = this.core.getInput("string");
 
-	private greet(): void {
-		this.core.info(`Hello to you, ${this.name}!`);
-	}
+		const result = rot13.transform(input);
 
-	private tellTime(): void {
-		this.core.setOutput("time", this.getDate().toTimeString());
-	}
-
-	private dumpPayload(): void {
-		this.core.debug(`The event payload: ${this.payload}`);
-	}
-
-	private get payload(): string {
-		return JSON.stringify(this.github.context.payload, undefined, 2);
-	}
-
-	private get name(): string {
-		return this.core.getInput("who-to-greet");
+		this.core.setOutput("result", result);
 	}
 }

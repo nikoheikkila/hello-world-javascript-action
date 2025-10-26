@@ -1,48 +1,40 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { HelloWorldGitHubAction } from "../src/action.ts";
-import { FakeCore, FakeGitHub } from "./utils.ts";
+import { Rot13GitHubAction } from "../src/action.ts";
+import { FakeCore } from "./utils.ts";
 
 describe("Hello World GitHub Action", () => {
-	const dateFn = () => new Date();
-	let action: HelloWorldGitHubAction;
+	let action: Rot13GitHubAction;
 	let core: FakeCore;
-	let github: FakeGitHub;
 
 	beforeEach(() => {
 		core = new FakeCore();
-		github = new FakeGitHub();
-		action = new HelloWorldGitHubAction({
+		action = new Rot13GitHubAction({
 			core,
-			github,
-			dateFn,
 		});
 	});
 
-	it("greets the caller", () => {
-		const name = "Niko";
-		core.setInput("who-to-greet", name);
+	it.each([
+		["", ""],
+		["A", "N"],
+		["M", "Z"],
+		["N", "A"],
+		["Z", "M"],
+		["a", "n"],
+		["m", "z"],
+		["n", "a"],
+		["z", "m"],
+		["HELLO", "URYYB"],
+		["WORLD", "JBEYQ"],
+		["ROT13", "EBG13"],
+		["123", "123"],
+		["!@#$%", "!@#$%"],
+		["Hello, World!", "Uryyb, Jbeyq!"],
+	])("transforms %s to %s", (input, expectedResult) => {
+		core.setInput("string", input);
 
 		action.run();
 
-		expect(core.events.info).toContain(`Hello to you, ${name}!`);
-	});
-
-	it("sets current time as output", () => {
-		const expectedTime = dateFn().toTimeString();
-
-		action.run();
-
-		const actualTime = core.getOutput("time");
-		expect(actualTime).toBe(expectedTime);
-	});
-
-	it("prints out context payload for debugging", () => {
-		github.setContext("payload", { key: "value" });
-
-		action.run();
-
-		expect(core.events.debug).toContain(
-			'The event payload: {\n  "key": "value"\n}',
-		);
+		const actualResult = core.getOutput("result");
+		expect(actualResult).toBe(expectedResult);
 	});
 });

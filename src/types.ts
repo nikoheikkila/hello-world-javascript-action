@@ -18,6 +18,4 @@ export type DateFn = () => Date;
 
 export interface ActionDependencies {
 	core: Core;
-	github: GitHub;
-	dateFn?: DateFn;
 }

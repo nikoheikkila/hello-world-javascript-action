@@ -1,12 +1,12 @@
-import type { Context, Core, GitHub } from "../src/types.ts";
+import type { Core } from "../src/types.ts";
 
 export type LogLevel = "debug" | "info";
 type Events = Record<LogLevel, string[]>;
 
 export class FakeCore implements Core {
-	public readonly events: Events;
-	public readonly inputs: Map<string, string>;
-	public readonly outputs: Map<string, unknown>;
+	private readonly events: Events;
+	private readonly inputs: Map<string, string>;
+	private readonly outputs: Map<string, unknown>;
 
 	public constructor() {
 		this.events = { info: [], debug: [] };
@@ -36,19 +36,5 @@ export class FakeCore implements Core {
 
 	public info(message: string): void {
 		this.events.info.push(message);
-	}
-}
-
-export class FakeGitHub implements GitHub {
-	public context: Context;
-
-	public constructor() {
-		this.context = {
-			payload: {},
-		};
-	}
-
-	public setContext(key: string, value: unknown): void {
-		this.context[key] = value;
 	}
 }
