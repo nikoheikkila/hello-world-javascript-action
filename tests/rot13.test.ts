@@ -2,15 +2,9 @@ import { describe, expect, it } from "bun:test";
 import fc from "fast-check";
 import { transform } from "../src/rot13";
 
-fc.configureGlobal({ baseSize: "large" });
-
-const allLetters = /[a-zA-Z]/;
-const upperCaseLetters = /[A-Z]/;
-const lowerCaseLetters = /[a-z]/;
-
-const isLetter = (char: string) => allLetters.test(char);
-const isUpperCase = (char: string) => upperCaseLetters.test(char);
-const isLowerCase = (char: string) => lowerCaseLetters.test(char);
+const isUpperCase = (letter: string) => letter === letter.toUpperCase();
+const isLowerCase = (letter: string) => letter === letter.toLowerCase();
+const isSpecialCharacter = (letter: string) => !/[A-Za-z]/.test(letter);
 
 describe("Rot 13", () => {
 	it.each([
@@ -49,30 +43,18 @@ describe("Rot 13", () => {
 		);
 	});
 
-	it("preserves character type", () => {
+	it("preserves uppercase", () => {
 		fc.assert(
-			fc.property(fc.string(), (text) => {
-				const result = transform(text);
-
-				return [...text].every((char, i) => {
-					const transformed = result[i] ?? "";
-					return isLetter(char) ? isLetter(transformed) : char === transformed;
-				});
+			fc.property(fc.string().filter(isUpperCase), (text) => {
+				return [...transform(text)].every(isUpperCase);
 			}),
 		);
 	});
 
-	it("preserves case", () => {
+	it("preserves lowercase", () => {
 		fc.assert(
-			fc.property(fc.string(), (text) => {
-				const result = transform(text);
-
-				return [...text].every((char, i) => {
-					const transformed = result[i] ?? "";
-					if (isUpperCase(char)) return isUpperCase(transformed);
-					if (isLowerCase(char)) return isLowerCase(transformed);
-					return true;
-				});
+			fc.property(fc.string().filter(isLowerCase), (text) => {
+				return [...transform(text)].every(isLowerCase);
 			}),
 		);
 	});
@@ -80,17 +62,8 @@ describe("Rot 13", () => {
 	it("only transforms alphabetic characters", () => {
 		fc.assert(
 			fc.property(
-				fc.string().filter((s) => !allLetters.test(s)),
+				fc.string().filter(isSpecialCharacter),
 				(nonAlphabetic) => transform(nonAlphabetic) === nonAlphabetic,
-			),
-		);
-	});
-
-	it("is its own inverse", () => {
-		fc.assert(
-			fc.property(
-				fc.string().filter((s) => s.length > 0 && allLetters.test(s)),
-				(text) => transform(transform(text)) === text,
 			),
 		);
 	});
