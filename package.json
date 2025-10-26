@@ -15,8 +15,7 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"@actions/core": "^1.11.1",
-		"@actions/github": "^6.0.1"
+		"@actions/core": "^1.11.1"
 	},
 	"scripts": {
 		"prepare": "husky"
