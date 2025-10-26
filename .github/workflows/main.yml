@@ -117,3 +117,21 @@ jobs:
           gh release create "${{ steps.tag_version.outputs.new_version }}" \
             --title "Release ${{ steps.tag_version.outputs.new_version }}" \
             --generate-notes
+
+  test-tagged-action:
+    name: Test tagged action
+    runs-on: ubuntu-latest
+    needs: [release]
+
+    steps:
+      - name: ROT-13
+        uses: nikoheikkila/rot-13-action@v1
+        id: rot13
+        with:
+          string: ${{ env.original }}
+
+      - name: Fail expectation
+        if: steps.rot13.outputs.result != env.transformed
+        run: |
+          echo "::error::Expected result of transformation was '${{ env.transformed }}', but got '${{ steps.rot13.outputs.result }}'"
+          exit 1
