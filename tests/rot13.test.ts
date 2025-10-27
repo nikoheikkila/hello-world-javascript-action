@@ -1,6 +1,6 @@
 import { describe, it } from "bun:test";
 import fc from "fast-check";
-import { transform } from "../src/rot13";
+import { transform } from "../src/rot13.ts";
 
 const isUpperCase = (letter: string) => letter === letter.toUpperCase();
 const isLowerCase = (letter: string) => letter === letter.toLowerCase();

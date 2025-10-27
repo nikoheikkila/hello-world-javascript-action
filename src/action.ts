@@ -1,5 +1,5 @@
 import { ActionInputs } from "./input.ts";
-import * as rot13 from "./rot13";
+import * as rot13 from "./rot13.ts";
 import type { ActionDependencies, Core } from "./types.ts";
 
 export class Rot13GitHubAction {
