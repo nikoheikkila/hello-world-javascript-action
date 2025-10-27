@@ -1,6 +1,6 @@
 import type { Core } from "../src/types.ts";
 
-export type LogLevel = "debug" | "info";
+export type LogLevel = "info";
 type Events = Record<LogLevel, string[]>;
 
 export class FakeCore implements Core {
@@ -9,7 +9,7 @@ export class FakeCore implements Core {
 	private readonly outputs: Map<string, unknown>;
 
 	public constructor() {
-		this.events = { info: [], debug: [] };
+		this.events = { info: [] };
 		this.inputs = new Map();
 		this.outputs = new Map();
 	}
@@ -32,10 +32,6 @@ export class FakeCore implements Core {
 
 	public eventsOf(level: LogLevel): string[] {
 		return this.events[level];
-	}
-
-	public debug(message: string): void {
-		this.events.debug.push(message);
 	}
 
 	public info(message: string): void {

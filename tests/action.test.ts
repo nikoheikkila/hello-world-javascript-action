@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { Rot13GitHubAction } from "../src/action.ts";
 import { FakeCore } from "./utils.ts";
 
-describe("Hello World GitHub Action", () => {
+describe("ROT-13 Transformer", () => {
 	let action: Rot13GitHubAction;
 	let core: FakeCore;
 
