@@ -13,8 +13,15 @@ describe("Hello World GitHub Action", () => {
 		});
 	});
 
+	it("fails with empty string input", () => {
+		core.setInput("string", "");
+
+		expect(() => action.run()).toThrowError(
+			/input field 'string' cannot be empty/i,
+		);
+	});
+
 	it.each([
-		["", ""],
 		["A", "N"],
 		["M", "Z"],
 		["N", "A"],
