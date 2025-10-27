@@ -1,28 +1,23 @@
-import * as z from "zod";
+import { ActionInputs } from "./input.ts";
 import * as rot13 from "./rot13";
 import type { ActionDependencies, Core } from "./types.ts";
 
 export class Rot13GitHubAction {
 	private readonly core: Core;
+	private readonly inputs: ActionInputs;
 
 	public constructor({ core }: ActionDependencies) {
 		this.core = core;
+		this.inputs = new ActionInputs(core);
 	}
 
 	public run(): void {
-		const input = this.parseInput();
+		const { string } = this.inputs.parse();
 
-		const result = rot13.transform(input);
+		const result = rot13.transform(string);
 
-		this.logResult(input, result);
+		this.logResult(string, result);
 		this.setResult(result);
-	}
-
-	private parseInput(): string {
-		const key = "string";
-		const message = `input field '${key}' cannot be empty`;
-
-		return z.string().nonempty(message).parse(this.core.getInput(key));
 	}
 
 	private logResult(input: string, result: string): void {
