@@ -23,7 +23,7 @@ task test:watch     # Run tests in watch mode
 The `task build` command uses Bun to create a single JavaScript bundle:
 
 **Key points:**
-- Entry point: `src/index.ts`
+- Entry point: `bin/index.ts`
 - Output: `dist/index.js` (committed to Git)
 - Target: Node.js (GitHub Actions uses Node 20 runtime)
 - Format: ESM with inline source maps
@@ -97,7 +97,7 @@ The typical development cycle follows the TDD cycle:
 
 1. **Write a new unit test** in `tests/` using test doubles
 2. Run the tests with `task test`, and **ensure the new test fails**
-3. **Make changes** to source code in `src/` until the test passes
+3. **Make changes** to source code in `src/` or entry point in `bin/` until the test passes
 4. Refactor the solution while **keeping the test passing**
 5. **Build the bundle** with `task build`
 
@@ -122,7 +122,7 @@ node dist/index.js
 
 If the action fails in CI:
 
-1. Check that `dist/index.js` is up to date with `src/`
+1. Check that `dist/index.js` is up to date with `bin/` and `src/`
 2. Run `task build` and commit if needed
 3. Verify the bundle works locally: `bun dist/index.js`
 4. Find the ID of the latest failing run with `gh run list`

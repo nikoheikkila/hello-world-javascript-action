@@ -75,7 +75,7 @@ Build the action for distribution:
 task build
 ```
 
-This bundles `src/index.ts` into `dist/index.js` with:
+This bundles `bin/index.ts` into `dist/index.js` with:
 - Minification enabled
 - ESM format targeting Node.js 20
 
@@ -162,8 +162,8 @@ The action is configured in [action.yml](./action.yml):
 
 ## Build Process
 
-1. **Source code** is written in TypeScript under `src/`
-2. **Bun** bundles `src/index.ts` and outputs to `dist/index.js`
+1. **Source code** is written in TypeScript under `src/` with business logic and `bin/` for the entry point
+2. **Bun** bundles `bin/index.ts` and outputs to `dist/index.js`
 3. **Pre-commit hook** ensures tests pass and the bundle is up to date
 4. **GitHub Actions** runs the `dist/index.js` bundle using Node.js 20 runtime
 
