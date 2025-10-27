@@ -14,6 +14,7 @@ export class Rot13GitHubAction {
 
 		const result = rot13.transform(input);
 
+		this.logResult(input, result);
 		this.setResult(result);
 	}
 
@@ -22,6 +23,10 @@ export class Rot13GitHubAction {
 		const message = `input field '${key}' cannot be empty`;
 
 		return z.string().nonempty(message).parse(this.core.getInput(key));
+	}
+
+	private logResult(input: string, result: string): void {
+		this.core.info(`${input} -> ${result}`);
 	}
 
 	private setResult(result: string): void {

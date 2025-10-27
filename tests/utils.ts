@@ -30,6 +30,10 @@ export class FakeCore implements Core {
 		this.outputs.set(name, value);
 	}
 
+	public eventsOf(level: LogLevel): string[] {
+		return this.events[level];
+	}
+
 	public debug(message: string): void {
 		this.events.debug.push(message);
 	}

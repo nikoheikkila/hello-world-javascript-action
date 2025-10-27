@@ -43,5 +43,6 @@ describe("Hello World GitHub Action", () => {
 
 		const actualResult = core.getOutput("result");
 		expect(actualResult).toBe(expectedResult);
+		expect(core.eventsOf("info")).toContain(`${input} -> ${expectedResult}`);
 	});
 });
