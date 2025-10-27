@@ -13,9 +13,11 @@ Use Task for all common operations:
 ```sh
 task install        # Install dependencies with bun install --frozen-lockfile
 task build          # Bundle action with Bun to dist/index.js
-task test           # Run tests with bun test
-task test:mutation  # Run mutation tests with Stryker
 task test:watch     # Run tests in watch mode
+task test           # Run full test suite including what's listed below
+task test:unit      # Run unit tests
+task test:mutation  # Run mutation tests with Stryker
+task test:build     # Run post-build tests
 ```
 
 ### Build Process
@@ -66,7 +68,7 @@ git add dist        # Stage the updated bundle
 Husky automatically runs before each push:
 
 ```sh
-task test test:mutation  # Run unit and mutation tests in parallel
+task test  # Run the full test suite
 ```
 
 **Why this matters:**
@@ -96,20 +98,19 @@ When developing GitHub Actions:
 The typical development cycle follows the TDD cycle:
 
 1. **Write a new unit test** in `tests/` using test doubles
-2. Run the tests with `task test`, and **ensure the new test fails**
+2. Run the unit tests with `task test:unit`, and **ensure the new test fails**
 3. **Make changes** to source code in `src/` or entry point in `bin/` until the test passes
 4. Refactor the solution while **keeping the test passing**
-5. **Build the bundle** with `task build`
+5. **Run** the entire test suite with `task test`
 
 ### Local Testing
 
 Test the action logic without GitHub:
 
 ```sh
-task test                 # Run all unit tests
-task test --watch         # Watch mode for TDD
-task test -- action.test.ts # Run a specific test file
-task test:mutation        # Run mutation tests
+task test                        # Run all unit tests
+task test:unit -- action.test.ts # Run a specific test file
+task test:mutation               # Run mutation tests
 ```
 
 Test the bundled action (simulating GitHub Actions):

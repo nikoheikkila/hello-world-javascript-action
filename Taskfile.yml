@@ -7,19 +7,15 @@ tasks:
 
   pull:
     desc: Pull latest changes from VCS
-    cmds:
-      - git pull --rebase --force
+    cmd: git pull --rebase --force
 
   install:
     desc: Install dependencies
-    deps:
-      - pull
     sources:
       - package.json
     generates:
       - bun.lock
-    cmds:
-      - bun install --frozen-lockfile
+    cmd: bun install --frozen-lockfile
 
   build:
     desc: Build GitHub Action
@@ -28,8 +24,7 @@ tasks:
       - src/**/*.ts
     generates:
       - dist/index.js
-    cmds:
-      - >
+    cmd: >
         bun build bin/index.ts
         --production
         --target node
@@ -38,32 +33,42 @@ tasks:
 
   clean:
     desc: Clean build artifacts
-    cmds:
-      - rm -rf dist/
+    cmd: rm -rf dist/
 
   test:
-    desc: Run unit tests
+    desc: Run the whole test suite
     cmds:
-      - bun test --coverage {{ .CLI_ARGS }}
+      - task: test:unit
+      - task: test:mutation
+      - task: test:build
+
+  test:unit:
+    desc: Run unit tests
+    cmd: bun test --coverage {{ .CLI_ARGS }}
 
   test:watch:
     desc: Run tests in watch mode
     cmd:
-      task: test
+      task: test:unit
       vars:
         CLI_ARGS: --watch
 
   test:mutation:
     desc: Run mutation tests with StrykerJS
-    cmds:
-      - bunx stryker run
+    cmd: bunx stryker run
+
+  test:build:
+    desc: Run post-build test
+    deps: [build]
+    dir: dist
+    cmd: node index.js
+    env:
+      INPUT_STRING: Hello, world!
 
   lint:
     desc: Lint code with Biome
-    cmds:
-      - bunx @biomejs/biome check .
+    cmd: bunx @biomejs/biome check .
 
   format:
     desc: Format code with Biome
-    cmds:
-      - bunx @biomejs/biome check --write .
+    cmd: bunx @biomejs/biome check --write .
