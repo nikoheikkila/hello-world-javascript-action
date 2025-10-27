@@ -4,7 +4,7 @@
 	"type": "module",
 	"private": true,
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.7",
+		"@biomejs/biome": "^2.3.1",
 		"@stryker-mutator/core": "^9.2.0",
 		"@stryker-mutator/typescript-checker": "^9.2.0",
 		"@types/bun": "latest",
