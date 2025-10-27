@@ -9,10 +9,10 @@ export class ActionInputs {
 	public constructor(private readonly core: Core) {}
 
 	public parse(): z.infer<typeof schema> {
-		return schema.parse(this.inputs);
+		return schema.decode(this.inputs);
 	}
 
-	private get inputs(): Record<string, string> {
+	private get inputs() {
 		return {
 			string: this.core.getInput("string"),
 		};
