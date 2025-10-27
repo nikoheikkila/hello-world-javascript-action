@@ -24,12 +24,13 @@ tasks:
   build:
     desc: Build GitHub Action
     sources:
+      - bin/**/*.ts
       - src/**/*.ts
     generates:
       - dist/index.js
     cmds:
       - >
-        bun build src/index.ts
+        bun build bin/index.ts
         --production
         --target node
         --outdir dist

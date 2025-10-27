@@ -35,12 +35,11 @@ Example: `"Hello, World!"` → `"Uryyb, Jbeyq!"`
 
 The action follows a clean architecture pattern with clear separation of concerns:
 
+- **`bin/index.ts`**: Invokes the action with production dependencies
 - **`src/types.ts`**: Type definitions for `Core` and `GitHub` interfaces
 - **`src/action.ts`**: Main action logic in `Rot13GitHubAction` class
 - **`src/rot13/`**: ROT-13 cipher implementation
-- **`src/main.ts`**: Entry point that handles error boundaries
-- **`src/index.ts`**: Simple runner that invokes `main()`
-- **`tests/`**: Test doubles (`FakeCore`, `FakeGitHub`) and comprehensive test suites
+- **`tests/`**: Test doubles (`FakeCore`) and comprehensive test suites
 
 This design uses **dependency injection** to make the action fully testable without mocking the GitHub Actions toolkit.
 
@@ -139,6 +138,8 @@ The action is configured in [action.yml](./action.yml):
 ├── .husky/               # Git hooks managed by Husky
 │   ├── pre-commit        # Runs tests and build before commit
 │   └── pre-push          # Runs mutation tests before push
+├── bin/                  # Binaries
+│   └── index.ts          # Entrypoint for the action
 ├── dist/                 # Bundled action output
 │   └── index.js          # Single-file bundle for GitHub Actions
 ├── src/                  # Source code
@@ -146,12 +147,11 @@ The action is configured in [action.yml](./action.yml):
 │   ├── rot13/            # ROT-13 cipher implementation
 │   │   └── index.ts      # Letter transformation logic
 │   ├── index.ts          # Entry point
-│   ├── main.ts           # Main runner with error handling
 │   └── types.ts          # TypeScript interfaces
 ├── tests/                # Test suite
-│   ├── main.test.ts      # Unit tests for action
+│   ├── action.test.ts      # Unit tests for action
 │   ├── rot13.test.ts     # Property-based tests for ROT-13
-│   └── utils.ts          # Test doubles (FakeCore, FakeGitHub)
+│   └── utils.ts          # Test doubles
 ├── action.yml            # GitHub Action metadata
 ├── package.json          # Dependencies
 ├── stryker.config.mjs    # Mutation testing configuration

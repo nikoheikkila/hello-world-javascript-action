@@ -108,7 +108,7 @@ Test the action logic without GitHub:
 ```sh
 task test                 # Run all unit tests
 task test --watch         # Watch mode for TDD
-task test -- main.test.ts # Run a specific test file
+task test -- action.test.ts # Run a specific test file
 task test:mutation        # Run mutation tests
 ```
 
