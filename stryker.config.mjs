@@ -1,6 +1,6 @@
-export default {
-	packageManager: "npm",
-	testRunner: "command",
+// @ts-check
+/** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
+const config = {
 	commandRunner: {
 		command: "bun test",
 	},
@@ -9,10 +9,9 @@ export default {
 	reporters: ["clear-text", "progress"],
 	thresholds: {
 		high: 100,
-		low: 80,
+		low: 100,
 		break: 100,
 	},
-	timeoutMS: 60000,
-	concurrency: 4,
-	coverageAnalysis: "perTest",
 };
+
+export default config;
