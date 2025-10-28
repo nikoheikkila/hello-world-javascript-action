@@ -1,5 +1,12 @@
-name: ROT-13
-description: Transform strings using ROT-13 cipher
+name: ROT-13 Action
+author: Niko Heikkilä
+branding:
+  color: white
+  icon: rotate-cw
+description: |
+  A custom GitHub Action built with **Bun** and **TypeScript** transforming strings using the ROT-13 cipher.
+  This action demonstrates best practices for building GitHub Actions with modern JavaScript tooling,
+  clean architecture, property-based testing, and comprehensive mutation testing.
 
 inputs:
   string:
@@ -11,5 +18,5 @@ outputs:
     description: Result of the transformation
 
 runs:
-  using: node20
+  using: node24
   main: dist/index.js

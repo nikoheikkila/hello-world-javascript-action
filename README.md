@@ -1,8 +1,43 @@
-# ROT-13 JavaScript Action
+# `nikoheikkila/rot-13-action`
 
-A custom GitHub Action built with **Bun** and **TypeScript** that transforms strings using the ROT-13 cipher.
+<!-- action-docs-all source="action.yml" project="nikoheikkila/rot-13-action" version="v1" -->
+## Description
 
-This project demonstrates best practices for building GitHub Actions with modern JavaScript tooling, clean architecture, property-based testing, and comprehensive mutation testing.
+A custom GitHub Action built with **Bun** and **TypeScript** transforming strings using the ROT-13 cipher.
+This action demonstrates best practices for building GitHub Actions with modern JavaScript tooling,
+clean architecture, property-based testing, and comprehensive mutation testing.
+
+
+## Inputs
+
+| name | description | required | default |
+| --- | --- | --- | --- |
+| `string` | <p>String to transform</p> | `true` | `""` |
+
+
+## Outputs
+
+| name | description |
+| --- | --- |
+| `result` | <p>Result of the transformation</p> |
+
+
+## Runs
+
+This action is a `node24` action.
+
+## Usage
+
+```yaml
+- uses: nikoheikkila/rot-13-action@v1
+  with:
+    string:
+    # String to transform
+    #
+    # Required: true
+    # Default: ""
+```
+<!-- action-docs-all source="action.yml" project="nikoheikkila/rot-13-action" version="v1" -->
 
 ## Features
 
@@ -82,83 +117,6 @@ This bundles `bin/index.ts` into `dist/index.js` with:
 ### Pre-commit Hooks
 
 Husky automatically runs tests and builds before each commit. This ensures `dist/` is always up to date with your source code.
-
-## GitHub Action Usage
-
-### Inputs
-
-#### `string`
-
-**Required**: The text to transform with ROT-13 cipher.
-
-### Outputs
-
-#### `result`
-
-The ROT-13 transformed string.
-
-### Example Workflow
-
-Add this action to your GitHub workflow:
-
-```yaml
-name: Transform Text
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  transform:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Transform text with ROT-13
-        id: rot13
-        uses: nikoheikkila/rot-13-action@main
-        with:
-          string: 'Hello, World!'
-
-      - name: Show transformed result
-        run: |
-          echo "Transformed: ${{ steps.rot13.outputs.result }}"
-```
-
-### Action Metadata
-
-The action is configured in [action.yml](./action.yml):
-
-## Project Structure
-
-```
-.
-├── .husky/               # Git hooks managed by Husky
-│   ├── pre-commit        # Runs tests and build before commit
-│   └── pre-push          # Runs mutation tests before push
-├── bin/                  # Binaries
-│   └── index.ts          # Entrypoint for the action
-├── dist/                 # Bundled action output
-│   └── index.js          # Single-file bundle for GitHub Actions
-├── src/                  # Source code
-│   ├── action.ts         # Action implementation
-│   ├── rot13/            # ROT-13 cipher implementation
-│   │   └── index.ts      # Letter transformation logic
-│   ├── index.ts          # Entry point
-│   └── types.ts          # TypeScript interfaces
-├── tests/                # Test suite
-│   ├── action.test.ts      # Unit tests for action
-│   ├── rot13.test.ts     # Property-based tests for ROT-13
-│   └── utils.ts          # Test doubles
-├── action.yml            # GitHub Action metadata
-├── package.json          # Dependencies
-├── stryker.config.mjs    # Mutation testing configuration
-├── Taskfile.yml          # Task automation configuration
-├── tsconfig.json         # TypeScript configuration
-└── README.md             # This file
-```
 
 ## Build Process
 

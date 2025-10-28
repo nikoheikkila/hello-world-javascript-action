@@ -1,2 +1,2 @@
 task -p lint build
-git add dist
+git add dist README.md

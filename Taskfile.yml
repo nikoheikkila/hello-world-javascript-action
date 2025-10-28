@@ -11,6 +11,7 @@ tasks:
 
   install:
     desc: Install dependencies
+    run: once
     sources:
       - package.json
     generates:
@@ -19,6 +20,7 @@ tasks:
 
   build:
     desc: Build GitHub Action
+    deps: [docs]
     sources:
       - bin/**/*.ts
       - src/**/*.ts
@@ -32,8 +34,10 @@ tasks:
         --format esm
 
   clean:
-    desc: Clean build artifacts
-    cmd: rm -rf dist/
+    desc: Cleans and rebuilds artifacts
+    cmds:
+      - rm -rf dist/
+      - task: build
 
   test:
     desc: Run the whole test suite
@@ -44,10 +48,12 @@ tasks:
 
   test:unit:
     desc: Run unit tests
+    deps: [install]
     cmd: bun test --coverage {{ .CLI_ARGS }}
 
   test:watch:
     desc: Run tests in watch mode
+    deps: [install]
     cmd:
       task: test:unit
       vars:
@@ -55,6 +61,7 @@ tasks:
 
   test:mutation:
     desc: Run mutation tests with StrykerJS
+    deps: [install]
     cmd: bunx stryker run
 
   test:build:
@@ -67,8 +74,20 @@ tasks:
 
   lint:
     desc: Lint code with Biome
+    deps: [install]
     cmd: bunx @biomejs/biome check .
 
   format:
     desc: Format code with Biome
+    deps: [install]
     cmd: bunx @biomejs/biome check --write .
+
+  docs:
+    desc: Update documentation
+    deps: [install]
+    sources:
+      - action.yml
+    generates:
+      - README.md
+    cmd: bunx action-docs --no-banner --update-readme
+
