@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: '3'
 
 tasks:
@@ -90,4 +91,3 @@ tasks:
     generates:
       - README.md
     cmd: bunx action-docs --no-banner --update-readme
-
