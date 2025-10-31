@@ -17,7 +17,9 @@ tasks:
       - package.json
     generates:
       - bun.lock
-    cmd: bun install --frozen-lockfile
+    cmds:
+      - bun install --frozen-lockfile
+      - bun audit --audit-level=low
 
   build:
     desc: Build GitHub Action
