@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: bun
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Let Renovate handle updates
+    open-pull-requests-limit: 0
+    reviewers:
+      - "nikoheikkila"
+    labels:
+      - "dependencies"
+      - "security"
