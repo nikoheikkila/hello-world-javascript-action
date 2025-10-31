@@ -21,6 +21,15 @@ describe("ROT-13 Transformer", () => {
 		);
 	});
 
+	it("fails with input exceeding maximum length", () => {
+		const input = "*".repeat(1048577);
+		core.setInput("string", input);
+
+		expect(() => action.run()).toThrowError(
+			/input field 'string' cannot exceed 1048576 characters/i,
+		);
+	});
+
 	it.each([
 		["A", "N"],
 		["M", "Z"],

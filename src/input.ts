@@ -2,7 +2,10 @@ import * as z from "zod";
 import type { Core } from "./types.ts";
 
 const schema = z.strictObject({
-	string: z.string().nonempty(`input field 'string' cannot be empty`),
+	string: z
+		.string()
+		.min(1, `input field 'string' cannot be empty`)
+		.max(1048576, `input field 'string' cannot exceed 1048576 characters`),
 });
 
 export class ActionInputs {
