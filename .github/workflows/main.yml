@@ -32,6 +32,10 @@ jobs:
           repo-token: ${{ github.token }}
           version: '3.x'
 
+      - name: Install ActionLint
+        shell: bash
+        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+
       - name: Install dependencies
         run: task install
 
