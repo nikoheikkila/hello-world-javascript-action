@@ -74,9 +74,11 @@ tasks:
       INPUT_STRING: Hello, world!
 
   lint:
-    desc: Lint code with Biome
+    desc: Lint the codebase
     deps: [install]
-    cmd: bunx @biomejs/biome check .
+    cmds:
+      - actionlint
+      - bunx @biomejs/biome check .
 
   format:
     desc: Format code with Biome
