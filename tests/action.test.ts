@@ -36,6 +36,11 @@ describe("ROT-13 Transformer", () => {
 		["123", "123"],
 		["!@#$%", "!@#$%"],
 		["Hello, World!", "Uryyb, Jbeyq!"],
+		["Héllo", "Uéyyb"],
+		["🔒 secret", "🔒 frperg"],
+		["Тест", "Тест"],
+		["مرحبا", "مرحبا"],
+		["こんにちは", "こんにちは"],
 	])("transforms %s to %s", (input, expectedResult) => {
 		core.setInput("string", input);
 
