@@ -34,7 +34,7 @@ jobs:
 
       - name: Install ActionLint
         shell: bash
-        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) latest /usr/local/bin
 
       - name: Install dependencies
         run: task install
