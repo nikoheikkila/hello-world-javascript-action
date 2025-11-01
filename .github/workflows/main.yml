@@ -66,16 +66,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: ROT-13
+      - name: Test with valid input
         uses: ./
-        id: rot13
+        id: valid
         with:
           string: ${{ env.original }}
 
-      - name: Fail expectation
-        if: steps.rot13.outputs.result != env.transformed
+      - name: Fail if output is incorrect
+        if: steps.valid.outputs.result != env.transformed
         run: |
-          echo "::error::Expected result of transformation was '${{ env.transformed }}', but got '${{ steps.rot13.outputs.result }}'"
+          echo "::error::Expected result of transformation was '${{ env.transformed }}', but got '${{ steps.valid.outputs.result }}'"
+          exit 1
+
+      - name: Test with empty input
+        uses: ./
+        id: invalid
+        continue-on-error: true
+        with:
+          string: ""
+
+      - name: Fail if empty input succeeds
+        if: steps.invalid.outcome != 'failure'
+        run: |
+          echo "::error::Expected action to fail when given empty input, but it succeeded."
           exit 1
 
   release:
