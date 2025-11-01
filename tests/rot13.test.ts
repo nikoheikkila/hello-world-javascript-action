@@ -2,41 +2,41 @@ import { describe, it } from "bun:test";
 import { assert, property, string } from "fast-check";
 import { transform } from "../src/rot13.ts";
 
-describe("Rot 13", () => {
-	const isUpperCase = (letter: string) => letter === letter.toUpperCase();
-	const isLowerCase = (letter: string) => letter === letter.toLowerCase();
-	const isSpecialCharacter = (letter: string) => !/[A-Za-z]/.test(letter);
+type Predicate = (s: string) => boolean;
 
+describe("ROT-13 transformation", () => {
 	it("does not change text length", () => {
-		assert(property(string(), (xs) => transform(xs).length === xs.length));
+		const preservesLength: Predicate = (s) => transform(s).length === s.length;
+
+		assert(property(string(), preservesLength));
 	});
 
-	it("is idempotent", () => {
-		assert(property(string(), (xs) => transform(transform(xs)) === xs));
+	it("is its own inverse", () => {
+		const isItsOwnInverse: Predicate = (s) => transform(transform(s)) === s;
+
+		assert(property(string(), isItsOwnInverse));
 	});
 
 	it("preserves uppercase", () => {
-		assert(
-			property(string().filter(isUpperCase), (xs) =>
-				[...transform(xs)].every(isUpperCase),
-			),
-		);
+		const isUpperCase: Predicate = (s) => s === s.toUpperCase();
+		const preservesUpperCase: Predicate = (s) =>
+			[...transform(s)].every(isUpperCase);
+
+		assert(property(string().filter(isUpperCase), preservesUpperCase));
 	});
 
 	it("preserves lowercase", () => {
-		assert(
-			property(string().filter(isLowerCase), (xs) =>
-				[...transform(xs)].every(isLowerCase),
-			),
-		);
+		const isLowerCase: Predicate = (s) => s === s.toLowerCase();
+		const preservesLowercase: Predicate = (s) =>
+			[...transform(s)].every(isLowerCase);
+
+		assert(property(string().filter(isLowerCase), preservesLowercase));
 	});
 
 	it("only transforms alphabetic characters", () => {
-		assert(
-			property(
-				string().filter(isSpecialCharacter),
-				(xs) => transform(xs) === xs,
-			),
-		);
+		const isSpecialCharacter: Predicate = (s) => !/[A-Za-z]/.test(s);
+		const skipsTransformation: Predicate = (s) => transform(s) === s;
+
+		assert(property(string().filter(isSpecialCharacter), skipsTransformation));
 	});
 });
