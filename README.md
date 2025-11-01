@@ -39,7 +39,7 @@ This action is a `node24` action.
 ```
 <!-- action-docs-all source="action.yml" project="nikoheikkila/rot-13-action" version="v1" -->
 
-## Features
+## What's So Special About It?
 
 - 🚀 **Bun-powered toolchain**: Fast builds and testing with Bun runtime
 - 📐 **Clean architecture**: Dependency injection pattern for testability
@@ -52,7 +52,8 @@ This action is a `node24` action.
 
 ## What is ROT-13?
 
-In case you didn't know, ROT-13 is a simple letter substitution cipher that rotates letters 13 positions in the alphabet:
+In case you didn't know, ROT-13 is a simple letter substitution cipher that rotates letters 13 positions
+in the alphabet:
 
 - **A** → **N**, **B** → **O**, **M** → **Z**, **N** → **A**, **Z** → **M**
 - **Lowercase letters** are transformed similarly: **a** → **n**, **z** → **m**
@@ -71,12 +72,14 @@ Example: `"Hello, World!"` → `"Uryyb, Jbeyq!"`
 The action follows a clean architecture pattern with clear separation of concerns:
 
 - **`bin/index.ts`**: Invokes the action with production dependencies
-- **`src/types.ts`**: Type definitions for `Core` and `GitHub` interfaces
 - **`src/action.ts`**: Main action logic in `Rot13GitHubAction` class
-- **`src/rot13/`**: ROT-13 cipher implementation
+- **`src/input.ts`**: Input parsing and validation logic
+- **`src/rot13.ts`**: ROT-13 transformer implementation
+- **`src/types.ts`**: Type definitions for `Core` and `GitHub` interfaces
 - **`tests/`**: Test doubles (`FakeCore`) and comprehensive test suites
 
-This design uses **dependency injection** to make the action fully testable without mocking the GitHub Actions toolkit.
+This design uses **dependency injection** to make the action fully testable without mocking the
+GitHub Actions toolkit.
 
 ## Development
 
@@ -90,13 +93,13 @@ task install
 
 ### Testing
 
-Run tests once:
+Run all the tests once:
 
 ```sh
 task test
 ```
 
-Run tests in watch mode:
+Run unit tests in watch mode:
 
 ```sh
 task test:watch
@@ -116,16 +119,18 @@ This bundles `bin/index.ts` into `dist/index.js` with:
 
 ### Pre-commit Hooks
 
-Husky automatically runs tests and builds before each commit. This ensures `dist/` is always up to date with your source code.
+Husky automatically runs tests and builds before each commit. This ensures `dist/` is always up to date with your
+source code.
 
 ## Build Process
 
 1. **Source code** is written in TypeScript under `src/` with business logic and `bin/` for the entry point
 2. **Bun** bundles `bin/index.ts` and outputs to `dist/index.js`
 3. **Pre-commit hook** ensures tests pass and the bundle is up to date
-4. **GitHub Actions** runs the `dist/index.js` bundle using Node.js 20 runtime
+4. **GitHub Actions** runs the `dist/index.js` bundle using Node.js 24 runtime
 
-The bundled JavaScript file is committed to version control because GitHub Actions cannot run build steps when executing custom actions.
+The bundled JavaScript file is committed to version control because GitHub Actions cannot run build steps when
+executing custom actions.
 
 ## Testing Strategy
 
@@ -163,30 +168,3 @@ Run mutation tests with:
 ```sh
 task test:mutation
 ```
-
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. **Fork the repository** and create a feature branch
-2. **Write tests** for any new functionality
-3. **Run tests and build** before committing (pre-commit hooks will do this automatically)
-4. **Submit a pull request** with a clear description of changes
-
-### Code Style
-
-- Use TypeScript with strict mode enabled
-- Follow existing patterns for dependency injection
-- Prefer explicit types to implicit inference
-- Write descriptive test names that explain behavior
-
-## License
-
-MIT
-
-## Resources
-
-- [Bun Documentation](https://bun.sh/docs)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Task Documentation](https://taskfile.dev)
-- [Creating a JavaScript Action](https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action)

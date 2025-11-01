@@ -3,6 +3,7 @@ version: '3'
 
 tasks:
   default:
+    desc: Same as `task install`
     cmds:
     - task: install
 
