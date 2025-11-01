@@ -7,3 +7,7 @@ export interface Core {
 export interface ActionDependencies {
 	core: Core;
 }
+
+export interface ActionInputs {
+	string: string;
+}
