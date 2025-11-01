@@ -4,21 +4,30 @@
 
 ## GitHub Actions Development (Project-Specific)
 
-This project is a custom GitHub Action. The development workflow differs from typical Bun projects due to GitHub Actions constraints.
+This project is a custom GitHub Action.
+The development workflow differs from typical Bun and Node.js projects due to GitHub Actions constraints.
 
 ### Task Automation
 
-Use Task for all common operations:
+Use `task <name>` for all common operations.
 
-```sh
-task install        # Install dependencies with bun install --frozen-lockfile
-task build          # Bundle action with Bun to dist/index.js
-task test:watch     # Run tests in watch mode
-task test           # Run full test suite including what's listed below
-task test:unit      # Run unit tests
-task test:mutation  # Run mutation tests with Stryker
-task test:build     # Run post-build tests
-```
+Available tasks for this project:
+
+* `task build`               Build GitHub Action
+* `task clean`               Cleans and rebuilds artifacts
+* `task default`             Same as `task install`
+* `task docs`                Update documentation
+* `task format`              Format code with Biome
+* `task install`             Install dependencies
+* `task lint`                Lint the codebase
+* `task pull`                Pull latest changes from VCS
+* `task test`                Run the whole test suite
+* `task test:build`          Run post-build test
+* `task test:mutation`       Run mutation tests with StrykerJS
+* `task test:unit`           Run unit tests
+* `task test:watch`          Run tests in watch mode
+
+If unsure, run `task -a` to list all the tasks.
 
 ### Build Process
 
@@ -26,19 +35,10 @@ The `task build` command uses Bun to create a single JavaScript bundle:
 
 **Key points:**
 - Entry point: `bin/index.ts`
-- Output: `dist/index.js` (committed to Git)
+- Output: `dist/index.js` (always committed to Git)
 - Target: Node.js (GitHub Actions uses Node 20 runtime)
 - Format: ESM with inline source maps
 - Minification: Enabled for smaller bundle size
-
-### Testing with Test Doubles
-
-Tests must use dependency injection with test doubles instead of mocking.
-
-**Test doubles** in `tests/utils.ts`:
-- Implement same interfaces as `@actions/core` and `@actions/github` so that `core` and `github` remain injectable
-- Track all method calls and outputs for assertions
-- Enable testing without GitHub Actions runtime
 
 ### Dependency Injection Pattern
 
@@ -54,8 +54,8 @@ This enables:
 Husky automatically runs before each commit:
 
 ```sh
-task -p lint build  # Run tests and build in parallel
-git add dist        # Stage the updated bundle
+task -p lint build
+git add dist README.md
 ```
 
 **Why this matters:**
@@ -68,7 +68,7 @@ git add dist        # Stage the updated bundle
 Husky automatically runs before each push:
 
 ```sh
-task test  # Run the full test suite
+task test
 ```
 
 **Why this matters:**
@@ -79,7 +79,7 @@ task test  # Run the full test suite
 The `action.yml` file defines the action's interface:
 
 **Important constraints:**
-- `runs.using`: Must be `node20`
+- `runs.using`: Must be `node24`
 - `runs.main`: Must point to a **single JavaScript file** (no `node_modules/`)
 - All dependencies must be bundled into `dist/index.js`
 
@@ -88,7 +88,7 @@ The `action.yml` file defines the action's interface:
 When developing GitHub Actions:
 
 1. **Single bundle requirement**: Actions must be a single JS file. Use `task build` to bundle everything.
-2. **Node.js runtime in CI**: Actions run on Node.js 20, not Bun. Build output must be Node-compatible.
+2. **Node.js runtime in CI**: Actions run on Node.js 24, not Bun. Build output must be Node-compatible.
 3. **Use `@actions` packages**: Don't use custom HTTP clients for GitHub API. Use `@actions/core` and `@actions/github`.
 4. **Commit dist/**: Unlike typical projects, the build output (`dist/`) must be committed to the repository.
 5. **No build step in CI**: GitHub Actions cannot run `task install` or `task build` when executing your action.
@@ -108,15 +108,13 @@ The typical development cycle follows the TDD cycle:
 Test the action logic without GitHub:
 
 ```sh
-task test                        # Run all unit tests
-task test:unit -- action.test.ts # Run a specific test file
-task test:mutation               # Run mutation tests
+task test
 ```
 
 Test the bundled action (simulating GitHub Actions):
 
 ```sh
-node dist/index.js
+task test:build
 ```
 
 ### Debugging
