@@ -100,13 +100,12 @@ jobs:
           default_bump: patch
           create_annotated_tag: true
           dry_run: true
-          tag_prefix: ""
 
-      - name: Create and push version tags
-        if: steps.version.outputs.new_tag != steps.version.outputs.previous_tag
+      - name: Release new version
+        if: steps.version.outputs.new_version != steps.version.outputs.previous_version
         run: |
           function push() {
-            local tag="v$1"
+            local tag="$1"
             git tag -fa "$tag" -m "Release $tag"
             git push origin "$tag" --force  
           }
@@ -114,20 +113,16 @@ jobs:
           git config user.name "$USERNAME"
           git config user.email "$EMAIL"
           
-          push "$VERSION"
-          push "$(echo "$VERSION" | cut -d . -f 1)"
-          push "$(echo "$VERSION" | cut -d . -f 1-2)"
+          push "$TAG"
+          push "$(echo "$TAG" | cut -d . -f 1)"
+          push "$(echo "$TAG" | cut -d . -f 1-2)"
+          
+          gh release create "$TAG" --title "Release $TAG" --notes "$CHANGELOG" --verify-tag
         env:
-          VERSION: ${{ steps.version.outputs.new_version }}
           USERNAME: github-actions[bot]
           EMAIL: github-actions[bot]@users.noreply.github.com
-
-      - name: Create GitHub release
-        if: steps.version.outputs.new_tag != steps.version.outputs.previous_tag
-        run: gh release create "$VERSION" --title "Release $VERSION" --notes "$CHANGELOG"
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version.outputs.new_version }}
+          TAG: ${{ steps.version.outputs.new_tag }}
           CHANGELOG: ${{ steps.version.outputs.changelog }}
 
   test-tagged-action:
