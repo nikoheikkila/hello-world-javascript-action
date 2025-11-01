@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { Rot13GitHubAction } from "../src/action.ts";
+import { Rot13GitHubAction } from "../src";
 import { FakeCore } from "./utils.ts";
 
 describe("ROT-13 Transformer", () => {
@@ -14,19 +14,21 @@ describe("ROT-13 Transformer", () => {
 	});
 
 	it("fails with empty string input", () => {
-		core.setInput("string", "");
-
-		expect(() => action.run()).toThrowError(
-			/input field 'string' cannot be empty/i,
-		);
-	});
-
-	it("fails with input exceeding maximum length", () => {
-		const input = "*".repeat(1048577);
+		const input = "";
 		core.setInput("string", input);
 
 		expect(() => action.run()).toThrowError(
-			/input field 'string' cannot exceed 1048576 characters/i,
+			"input field 'string' cannot be empty",
+		);
+	});
+
+	it("fails with input exceeding 1 MB", () => {
+		const maxSize = 1024 * 1024;
+		const input = "*".repeat(maxSize + 1);
+		core.setInput("string", input);
+
+		expect(() => action.run()).toThrowError(
+			`input field 'string' cannot exceed ${maxSize} characters`,
 		);
 	});
 

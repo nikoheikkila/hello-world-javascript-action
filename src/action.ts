@@ -1,23 +1,27 @@
-import { ActionInputs } from "./input.ts";
+import * as input from "./input.ts";
 import * as rot13 from "./rot13.ts";
 import type { ActionDependencies, Core } from "./types.ts";
 
 export class Rot13GitHubAction {
 	private readonly core: Core;
-	private readonly inputs: ActionInputs;
 
 	public constructor({ core }: ActionDependencies) {
 		this.core = core;
-		this.inputs = new ActionInputs(core);
 	}
 
 	public run(): void {
-		const { string } = this.inputs.parse();
+		const { string } = this.parseInputs();
 
 		const result = rot13.transform(string);
 
 		this.logResult(string, result);
 		this.setResult(result);
+	}
+
+	private parseInputs() {
+		return input.parse({
+			string: this.core.getInput("string"),
+		});
 	}
 
 	private logResult(input: string, result: string): void {

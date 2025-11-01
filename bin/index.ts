@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { Rot13GitHubAction } from "../src/action.ts";
+import { Rot13GitHubAction } from "../src";
 
 const action = new Rot13GitHubAction({ core });
 
